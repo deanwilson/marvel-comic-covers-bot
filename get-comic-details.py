@@ -11,6 +11,7 @@ from sys import exit
 
 from twython import Twython
 
+MAX_TWEET_LENGTH = 280
 MAX_COMIC_ID = 89479  # newest shown via API console on 3rd July 2020
 
 
@@ -18,10 +19,9 @@ class ComicsData:
     def __init__(self, database):
         self.database = database
 
-    def _db_connect(self, database):
+    def _db_connect(self):
         try:
-            conn = sqlite3.connect(database)
-            conn
+            conn = sqlite3.connect(self.database)
         except Exception as e:
             print("Exception thrown: " + str(e))
             exit(1)
@@ -31,7 +31,7 @@ class ComicsData:
     def seen(self, comic_id):
         seen = False
 
-        conn = self._db_connect(self.database)
+        conn = self._db_connect()
         c = conn.cursor()
 
         c.execute("SELECT * FROM comics WHERE comic_id = '%d'" % comic_id)
@@ -41,14 +41,13 @@ class ComicsData:
         conn.close()
 
         if records:
-            print("Has records")  # DEBUG
             seen = True
 
         return seen
 
     def record(self, comic_id):
         print(f"In Record with {comic_id}")
-        conn = self._db_connect(self.database)
+        conn = self._db_connect()
         c = conn.cursor()
 
         try:
@@ -201,8 +200,7 @@ def choose_comic(comics, config, max_attempts=5):
             continue
 
         if not comics.seen(current_id):
-            print("IN IF")
-            # we have our winner
+            # we have our winner - it's a 200 and 23've not posted it before.
             comics.record(current_id)
             break
     else:
@@ -235,9 +233,6 @@ if __name__ == "__main__":
 
     attribution = extract_attribution(comic)
 
-    print(f"Modified {attribution}")
-    print(f"Original {comic['attributionText']}")
-
     twitter = get_twitter(config)
 
     photo = tweet_media(cover_url)
@@ -252,7 +247,7 @@ if __name__ == "__main__":
     creator_size = len(creators)
 
     creators_tweet = False
-    if base_size + creator_size > 280:
+    if base_size + creator_size > MAX_TWEET_LENGTH:
         print(f"Creators will not fit {base_size + creator_size}")
         creators_tweet = True
 
@@ -277,9 +272,9 @@ if __name__ == "__main__":
     description = comic_data["description"]
 
     if description:
-        print("Tweeting Description")
+        print("Tweeting separated description")
         description_summary = (
-            (description[:276] + "...") if len(description) > 280 else description
+            (description[:276] + "...") if len(description) > MAX_TWEET_LENGTH else description
         )
         result = twitter.update_status(
             status=description_summary, in_reply_to_status_id=prev_status
