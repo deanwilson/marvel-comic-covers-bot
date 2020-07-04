@@ -19,10 +19,9 @@ class ComicsData:
     def __init__(self, database):
         self.database = database
 
-    def _db_connect(self, database):
+    def _db_connect(self):
         try:
-            conn = sqlite3.connect(database)
-            conn
+            conn = sqlite3.connect(self.database)
         except Exception as e:
             print("Exception thrown: " + str(e))
             exit(1)
@@ -32,7 +31,7 @@ class ComicsData:
     def seen(self, comic_id):
         seen = False
 
-        conn = self._db_connect(self.database)
+        conn = self._db_connect()
         c = conn.cursor()
 
         c.execute("SELECT * FROM comics WHERE comic_id = '%d'" % comic_id)
@@ -49,7 +48,7 @@ class ComicsData:
 
     def record(self, comic_id):
         print(f"In Record with {comic_id}")
-        conn = self._db_connect(self.database)
+        conn = self._db_connect()
         c = conn.cursor()
 
         try:
