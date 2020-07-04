@@ -234,9 +234,6 @@ if __name__ == "__main__":
 
     attribution = extract_attribution(comic)
 
-    print(f"Modified {attribution}")
-    print(f"Original {comic['attributionText']}")
-
     twitter = get_twitter(config)
 
     photo = tweet_media(cover_url)
