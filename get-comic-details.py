@@ -201,8 +201,7 @@ def choose_comic(comics, config, max_attempts=5):
             continue
 
         if not comics.seen(current_id):
-            print("IN IF")
-            # we have our winner
+            # we have our winner - it's a 200 and 23've not posted it before.
             comics.record(current_id)
             break
     else:
