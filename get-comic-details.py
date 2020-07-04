@@ -41,7 +41,6 @@ class ComicsData:
         conn.close()
 
         if records:
-            print("Has records")  # DEBUG
             seen = True
 
         return seen
@@ -273,7 +272,7 @@ if __name__ == "__main__":
     description = comic_data["description"]
 
     if description:
-        print("Tweeting Description")
+        print("Tweeting separated description")
         description_summary = (
             (description[:276] + "...") if len(description) > MAX_TWEET_LENGTH else description
         )
