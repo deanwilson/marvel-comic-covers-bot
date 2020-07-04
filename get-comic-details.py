@@ -11,6 +11,7 @@ from sys import exit
 
 from twython import Twython
 
+MAX_TWEET_LENGTH = 280
 MAX_COMIC_ID = 89479  # newest shown via API console on 3rd July 2020
 
 
@@ -252,7 +253,7 @@ if __name__ == "__main__":
     creator_size = len(creators)
 
     creators_tweet = False
-    if base_size + creator_size > 280:
+    if base_size + creator_size > MAX_TWEET_LENGTH:
         print(f"Creators will not fit {base_size + creator_size}")
         creators_tweet = True
 
@@ -279,7 +280,7 @@ if __name__ == "__main__":
     if description:
         print("Tweeting Description")
         description_summary = (
-            (description[:276] + "...") if len(description) > 280 else description
+            (description[:276] + "...") if len(description) > MAX_TWEET_LENGTH else description
         )
         result = twitter.update_status(
             status=description_summary, in_reply_to_status_id=prev_status
